@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
 import appoinment
@@ -8,7 +10,11 @@ import vet
 from db import create_tables
 ##from pet import APIRouter
 
-app = FastAPI(lifespan=create_tables, title="Pet API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await create_tables(app)
+    yield
+app = FastAPI(lifespan=lifespan, title="Pet API")
 app.include_router(pet.router, tags=["pet"], prefix="/pets")
 app.include_router(user.router, tags=["user"], prefix="/users")
 app.include_router(vet.router, tags=["vet"], prefix="/vets")

@@ -1,19 +1,37 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI, Depends
+from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel, create_engine, Session
 from typing import Annotated
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine, create_async_engine
 
+load_dotenv()
+
+CLEVER_DB=(
+    f"postgresql+asyncpg://{os.getenv('POSTGRESQL_ADDON_USER')}:"
+    f"{os.getenv('POSTGRESQL_ADDON_PASSWORD')}@"
+    f"{os.getenv('POSTGRESQL_ADDON_HOST')}:"
+    f"{os.getenv('POSTGRESQL_ADDON_PORT')}/"
+    f"{os.getenv('POSTGRESQL_ADDON_DB')}"
+)
 
 db_name = "pets1.sqlite3"
 db_url = f"sqlite:///{db_name}"
 
-engine = create_engine(db_url)
+engine : AsyncEngine = create_async_engine(CLEVER_DB, echo=True)
+async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
-def create_tables(app:FastAPI):
-    SQLModel.metadata.create_all(engine)
-    yield
+##Engine con sqlite
+##engine = create_engine(db_url)
 
-def get_session() -> Session:
-    with Session(engine) as session:
+async def create_tables(app:FastAPI):
+    async with engine.begin() as conn:
+        await conn.run_sync(SQLModel.metadata.create_all)
+
+
+async def get_session():
+    async with async_session() as session:
         yield session
 
 SessionDep = Annotated[Session, Depends(get_session)]

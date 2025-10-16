@@ -10,14 +10,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DB_USER = os.getenv("POSTGRESQL_ADDON_USER_2")
-DB_PASSWORD = os.getenv("POSTGRESQL_PASSWORD_2")
+DB_PASSWORD = os.getenv("POSTGRESQL_ADDON_PASSWORD_2")
 DB_HOST = os.getenv("POSTGRESQL_ADDON_HOST")
-DB_PORT = os.getenv("POSTGRESQL_PORT_2")
+DB_PORT = os.getenv("POSTGRESQL_ADDON_PORT_2")
 DB_NAME = os.getenv("POSTGRESQL_ADDON_DB_2")
 
 CLEVER_URL = (
     f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
 )
+
 
 db_name = "pets1.sqlite3"
 db_url = f"sqlite:///{db_name}"
@@ -36,11 +38,11 @@ async def init_db():
         await conn.run_sync(SQLModel.metadata.create_all)
 
 
-async def get_session():
+async def get_session_clever():
     async with AsyncSessionLocal() as session:
         yield session
 
-
+##SQLITE
 engine = create_engine(db_url)
 
 
@@ -52,6 +54,5 @@ def create_tables(app: FastAPI):
 def get_session() -> Session:
     with Session(engine) as session:
         yield session
-
 
 SessionDep = Annotated[Session, Depends(get_session)]

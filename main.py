@@ -5,10 +5,23 @@ import pet
 import estudiantes
 import user
 import vet
-from db import create_tables
+from db import create_tables, init_db
 ##from pet import APIRouter
 
-app = FastAPI(lifespan=create_tables, title="Pet API")
+##Clever
+from contextlib import asynccontextmanager
+import os
+
+from dotenv import load_dotenv
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    yield
+
+
+
+app = FastAPI(lifespan=lifespan, title="Pet API")
 app.include_router(pet.router, tags=["pet"], prefix="/pets")
 app.include_router(user.router, tags=["user"], prefix="/users")
 app.include_router(vet.router, tags=["vet"], prefix="/vets")

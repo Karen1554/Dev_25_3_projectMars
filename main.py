@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db()
+    await init_db(app)
     yield
 
 

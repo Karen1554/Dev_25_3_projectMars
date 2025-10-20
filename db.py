@@ -3,15 +3,15 @@ from sqlmodel import SQLModel, create_engine, Session
 from typing import Annotated
 ## Asincronico
 import os
-from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine, create_async_engine
 from dotenv import load_dotenv
 
 load_dotenv()
 
 DB_USER = os.getenv("POSTGRESQL_ADDON_USER_2")
 DB_PASSWORD = os.getenv("POSTGRESQL_ADDON_PASSWORD_2")
-DB_HOST = os.getenv("POSTGRESQL_ADDON_HOST")
+DB_HOST = os.getenv("POSTGRESQL_ADDON_HOST_2")
 DB_PORT = os.getenv("POSTGRESQL_ADDON_PORT_2")
 DB_NAME = os.getenv("POSTGRESQL_ADDON_DB_2")
 
@@ -24,22 +24,17 @@ CLEVER_URL = (
 db_name = "pets1.sqlite3"
 db_url = f"sqlite:///{db_name}"
 
-engine_clever = create_async_engine(CLEVER_URL)
+engine_clever :AsyncEngine = create_async_engine(CLEVER_URL, echo=True)
 
-AsyncSessionLocal = async_sessionmaker(
-    engine_clever,
-    class_=AsyncSession,
-    expire_on_commit=False
-)
+async_session = sessionmaker(engine_clever, expire_on_commit=False, class_=AsyncSession)
 
-
-async def init_db():
+async def init_db(app: FastAPI):
     async with engine_clever.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
 
 
 async def get_session_clever():
-    async with AsyncSessionLocal() as session:
+    async with async_session() as session:
         yield session
 
 ##SQLITE
@@ -55,4 +50,4 @@ def get_session() -> Session:
     with Session(engine) as session:
         yield session
 
-SessionDep = Annotated[Session, Depends(get_session)]
+SessionDep = Annotated[async_session, Depends(get_session_clever)]

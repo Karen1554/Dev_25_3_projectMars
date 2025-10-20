@@ -10,17 +10,16 @@ async def create_appoinment(new_appoinment: AppointmentCreate, session: SessionD
     data = new_appoinment.model_dump()
     vet_id = data.get("vet_id")
     pet_id = data.get("pet_id")
-    vet_db=session.get(Vet,vet_id)
-    pet_db=session.get(Pet,pet_id)
+    vet_db = await session.get(Vet, vet_id)
+    pet_db = await session.get(Pet, pet_id)
 
     if not vet_db or not pet_db:
         raise HTTPException(status_code=404, detail="Pet or Vet not found")
 
-    appoinment=Appointment.model_validate(data)
+    appoinment = Appointment.model_validate(data)
     session.add(appoinment)
-    session.commit()
-    session.refresh(appoinment)
-
+    await session.commit()
+    await session.refresh(appoinment)
 
     return appoinment
 

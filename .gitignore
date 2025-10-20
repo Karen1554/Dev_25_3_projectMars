@@ -306,3 +306,5 @@ cython_debug/
 pets1.sqlite3
 pets.sqlite3
 .env
+claude.md
+

@@ -1,5 +1,5 @@
 #Create pet
-POST http://localhost:8000/pets
+POST http://localhost:8050/pets
 Content-Type: application/json
 
 {"name": "gatito",

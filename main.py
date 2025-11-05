@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
-
+from fastapi.responses import HTMLResponse
 import bucket
 import appoinment
 import pet
@@ -16,11 +16,11 @@ import os
 
 from dotenv import load_dotenv
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db(app)
     yield
-
 
 
 app = FastAPI(lifespan=lifespan, title="Pet API")
@@ -30,20 +30,31 @@ app.include_router(pet.router, tags=["pet"], prefix="/pets")
 app.include_router(user.router, tags=["user"], prefix="/users")
 app.include_router(vet.router, tags=["vet"], prefix="/vets")
 app.include_router(appoinment.router, tags=["appointment"], prefix="/appointments")
-#app.include_router(estudiantes.router, tags=["estudiantes"], prefix="/estudiantes" )
+
+
+# app.include_router(estudiantes.router, tags=["estudiantes"], prefix="/estudiantes" )
 
 @app.post("/bucket")
-async def save_bucket (file: UploadFile = File(...)):
+async def save_bucket(file: UploadFile = File(...)):
     result = await bucket.upload_file(file)
     return result
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def root():
-    return {"message": "Hello World"}
+    return """
+    <html>
+    <head>
+    <title>Pet API</title>
+    </head>
+    <body>
+    <h1>Pet API</h1>
+    
+    <h2>by sigmotoa</h2>
+    </body>
+    </html>"""
 
 
 @app.get("/hello/{name}")
 async def say_hello(name: str):
     return {"message": f"Hello {name}"}
-

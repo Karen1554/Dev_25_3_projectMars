@@ -50,7 +50,7 @@ async def root():
     <body>
     <h1>Pet API</h1>
     
-    <h2>by sigmotoa</h2>
+    <a href=https://sigmotoa.com><h2>by sigmotoa</h2></a>
     </body>
     </html>"""
 

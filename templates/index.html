@@ -7,6 +7,13 @@
 <body>
 <h1>Un API de Animalitos</h1>
 <p>Vamos a usar esto de ejemplo</p>
+<p> Bienvenido: {{ texto }} </p>
+<ul>
+    {% for letter in texto %}
+    <li>{{ letter }}</li>
+    {% endfor %}
+</ul>
+
 <div>
     <img width="200" height="200" src="https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg">
 </div>

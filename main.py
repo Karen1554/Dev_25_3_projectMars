@@ -23,7 +23,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan, title="Pet API")
 
-
 app.mount("/templates", StaticFiles(directory="templates"), name="templates")
 app.mount("/img", StaticFiles(directory="upload"), name="img")
 app.include_router(pet.router, tags=["pet"], prefix="/pets")
@@ -32,6 +31,7 @@ app.include_router(vet.router, tags=["vet"], prefix="/vets")
 app.include_router(appoinment.router, tags=["appointment"], prefix="/appointments")
 
 templates = Jinja2Templates(directory="templates")
+
 
 # app.include_router(estudiantes.router, tags=["estudiantes"], prefix="/estudiantes" )
 
@@ -45,9 +45,14 @@ async def upload_file(file: UploadFile = File(...)):
 @app.get("/", response_class=HTMLResponse, status_code=200)
 async def root(request: Request):
     return templates.TemplateResponse(
-        request = request, name="index.html"
+        request=request, name="index.html"
     )
 
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+
+@app.get("/hello/{name}", response_class=HTMLResponse)
+async def say_hello(request: Request, name: str):
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={"texto": name.upper()}
+    )

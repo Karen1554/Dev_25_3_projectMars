@@ -38,7 +38,7 @@ async def upload_file(file: UploadFile = File(...)):
     return result
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse, status_code=200)
 async def root():
     return """
     <html>

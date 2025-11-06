@@ -1,4 +1,5 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI, UploadFile, File, Form, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import bucket
@@ -25,7 +26,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan, title="Pet API")
 
+app.mount("/templates", StaticFiles(directory="templates"), name="templates")
 app.mount("/static", StaticFiles(directory="bucket"), name="static")
+templates = Jinja2Templates(directory="templates")
 app.include_router(pet.router, tags=["pet"], prefix="/pets")
 app.include_router(user.router, tags=["user"], prefix="/users")
 app.include_router(vet.router, tags=["vet"], prefix="/vets")
@@ -41,18 +44,12 @@ async def save_bucket(file: UploadFile = File(...)):
 
 
 @app.get("/", response_class=HTMLResponse)
-async def root():
-    return """
-    <html>
-    <head>
-    <title>Pet API</title>
-    </head>
-    <body>
-    <h1>Pet API</h1>
-    
-    <a href=https://sigmotoa.com><h2>by sigmotoa</h2></a>
-    </body>
-    </html>"""
+async def root(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html"
+
+    )
 
 
 @app.get("/hello/{name}")

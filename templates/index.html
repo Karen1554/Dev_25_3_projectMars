@@ -7,7 +7,14 @@
 <body>
 <h1>Hoy es jueves de salchipapas</h1>
 
-<h3>Te llevaron?</h3>
+<h3>Te llevaron {{ name }}?</h3>
+
+<ul>
+    {% for l in name %}
+    <li>{{ l }}</li>
+    {% endfor %}
+</ul>
+
 <button>SI</button><button>NO</button>
 <div>
 

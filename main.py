@@ -52,6 +52,15 @@ async def root(request: Request):
     )
 
 
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+@app.get("/hello/{name}", response_class=HTMLResponse)
+async def say_hello(request:Request, name: str):
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request, "name": name}
+    )
+
+
+
+
+
+

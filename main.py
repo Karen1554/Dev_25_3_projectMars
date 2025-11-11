@@ -53,6 +53,6 @@ async def root(request: Request):
 async def say_hello(request: Request, name: str):
     return templates.TemplateResponse(
         request=request,
-        name="index.html",
+        name="hello.html",
         context={"texto": name.upper()}
     )

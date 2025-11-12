@@ -47,7 +47,7 @@ async def save_bucket(file: UploadFile = File(...)):
 async def root(request: Request):
     return templates.TemplateResponse(
         request=request,
-        name="index.html"
+        name="hello.html"
 
     )
 
